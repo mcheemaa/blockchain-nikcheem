@@ -21,13 +21,6 @@ class Block:
         return hex_hash
 
 
-class Transaction:
-    def __init__(self, sender, recipient, amount):
-        self.sender = sender
-        self.recipient = recipient
-        self.amount = amount
-
-
 class Blockchain:
     def __init__(self):
         self.chain = []
@@ -63,13 +56,15 @@ class Blockchain:
     def new_transaction(self, sender, recipient, amount):
         # Add transaction to the list
 
-        transaction = Transaction(
-            sender = sender,
-            recipient = recipient,
-            amount = amount
-        )
+        transaction = {
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount
+        }
 
         self.pending_transactions.append(transaction)
+
+        return len(self.chain)
 
     def mine(self):
         # Create new block with pending transactions
@@ -79,7 +74,7 @@ class Blockchain:
 
         block = Block(
             index = len(self.chain),
-            timestamp = time(),
+            timestamp = time.time(),
             transactions = self.pending_transactions,
             previous_hash = self.last_block.calc_hash()
         )
@@ -103,7 +98,7 @@ class Blockchain:
 
         return True
 
-    def calc_proof(self, block, proof):
+    def calc_proof(self, block):
         # Simple proof of work algorithm - hash must begin with # of zeros defined by difficulty property
 
         hash = block.calc_hash()
@@ -118,3 +113,27 @@ class Blockchain:
         # Validate the hash of a block 
 
         return (block.calc_hash().startswith('0' * self.difficulty) and block.calc_hash() == proof)
+
+    def validate_chain(self):
+        #Compare block hashes to ensure the chain hasn't been tampered with
+
+        for(i in range (2, len(self.chain)):
+            current_block = self.chain[i];
+            prebious_block = self.chain[i-1];
+
+            if current_block.hash != current_block.calc_hash()
+                return False
+          
+            if current_block.previous_hash != previous_block.hash
+                return False
+
+            if not current_block.calc_hash().startswith('0' * self.difficulty):
+                return False;
+
+            if not previous_block.calc_hash().startswith('0' * self.difficulty):
+                return False;
+        
+        return True
+
+    def resolve_conflicts(self):
+        # Simple consensus algorithm finds longest valid chain

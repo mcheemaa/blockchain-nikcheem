@@ -2,6 +2,7 @@ import blockchain
 import flask 
 from flask import Flask, request
 from uuid import uuid4
+import json
 
 app = Flask(__name__)
 
@@ -15,12 +16,12 @@ def get_transactions():
     if not blockchain.pending_transactions:
         return 'No pending transactions'
         
-    return blockchain.pending_transactions
+    return json.dumps(blockchain.pending_transactions)
 
 
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
-    values = request.args
+    values = request.get_json()
 
     # Check that required fields are in post response
     required = ['sender', 'recipient', 'amount']
@@ -38,7 +39,7 @@ def get_chain():
     for block in blockchain.chain:
         chain.append(block.__dict__)
 
-    return chain
+    return json.dumps(chain)
 
 
 @app.route('/mine', methods=['GET'])
@@ -60,7 +61,7 @@ def mine():
 
 @app.route('/nodes/new', methods=['POST'])
 def new_node():
-    values = request.args
+    values = request.get_json()
 
     nodes = values['nodes']
     if nodes is None:
