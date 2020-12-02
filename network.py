@@ -102,7 +102,7 @@ def hack_chain():
     return f'Block {block_index} changed'
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/chain/mine', methods=['GET'])
 def mine():
     block = my_blockchain.mine()
 
